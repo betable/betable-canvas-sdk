@@ -88,9 +88,12 @@ Betable.prototype.popup = function Betable_popup(url) {
     }
 }
 
-Betable.prototype.authorize = function Betable_authorize(redirectURI, callback) {
+Betable.prototype.authorize = function Betable_authorize(redirectURI, client_user_id) {
     if(this.mode != Mode.StandAlone) {
         alert("Error: You can only call authorize in Stand Alone mode")
+    } else if (this.demoMode) {
+        client_user_id = client_user_id || (Math.random()+1).toString(36).substr(-20,20)
+        window.location = redirectURI+'?client_user_id='+client_user_id
     } else {
         window.location = this.url('track', {
             action: 'authorize'
@@ -98,7 +101,6 @@ Betable.prototype.authorize = function Betable_authorize(redirectURI, callback) 
           , redirect_uri: redirectURI
           , response_type: 'code'
         })
-        //this.popup(this.url('ext/deposit/?client_id='+this.clientID+'redirect_uri='+redirectURI+''))
     }
 }
 

@@ -1,0 +1,386 @@
+<html ng-app="main.main">
+    <head>
+        <title>RoboSlots</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.js"></script>
+        <script src="betable.js"></script>
+        <meta charset="UTF-8">
+
+        <style>
+            @font-face {
+                font-family: leco;
+                src: url(LECO_1976-Regular.otf);
+            }
+            body {
+                background-color: #576366;
+                color: black;
+                font-family: leco;
+                margin: 0px;
+                overflow: hidden;
+            }
+            #window-content {
+                width: 100%;
+                max-width: 680px;
+                margin: auto;
+                height: 100%;
+            }
+            h1 {
+                color: #ADFC2D;
+                text-align: center;
+                font-size: 300%;
+                padding-top: 30%;
+            }
+            .play {
+                display:block;
+            }
+            .toolbar, .toolbar-filler {
+                height: 50px;
+            }
+            .toolbar {
+                position:fixed;
+                z-index: 2;
+                bottom: 0px;
+                left: 0px;
+                width: 100%;
+                background-color: #374346;
+            }
+            .toolbar .deposit, .toolbar .dollars, .toolbar .play-for-real {
+                float: right;
+            }
+            .toolbar .deposit, .toolbar .play-for-real{
+                font-size: 10px;
+                padding: 2px 0px 2px 5px;
+            }
+            .link {
+                color: #ADFC2D;
+                cursor: pointer;
+            }
+            .toolbar-content {
+                max-width: 680px;
+                margin: auto;
+                width: 100%;
+                padding: 5px 20px;
+                box-sizing: border-box;
+            }
+            .toolbar p {
+                padding: 0px;
+                margin: 0px;
+                line-height: 20px;
+            }
+            .toolbar .powered-by {
+                color: white;
+            }
+            .toolbar .powered-by .mini {
+                font-size: 9px;
+            }
+            .fade {
+                position: fixed;
+                top: -39px;
+                left: 0px;
+                background: url(Gradient.png) repeat-x;
+                height: 260px;
+                width: 100%;
+                z-index: 2;
+            }
+            button {
+                background-color: #ADFC2D;
+                color: #576366;
+                padding: 15px 40px;
+                border: none;
+                font-family: leco;
+                font-size: 25px;
+                text-align: center;
+                width: 150px;
+                margin: auto;
+            }
+            p.bet {
+                text-align: center;
+            }
+            .list-item {
+                margin: 10px auto;
+                width: 90%
+            }
+            .intro {
+                padding-top: 100%;
+            }
+            .window {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                height: 40px;
+                width: 90%;
+                border: 3px solid #ADFC2D;
+            }
+            .cover {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                z-index: 1;
+                color: #576366;
+                background-color: #ADFC2D;
+                width: 100%;
+                text-align: center;
+                cursor: pointer;
+                line-height: 36px;
+            }
+            @-webkit-keyframes reveal {
+                from {left: 0px;}
+                to {left: 200%;}
+            }
+
+            /* Standard syntax */
+            @keyframes reveal {
+                from {left: 0px;}
+                to {left: 200%;}
+            }
+            .cover.revealed {
+                -webkit-animation: reveal 1s;
+                animation: reveal 1s;
+                left: 200%;
+            }
+            .bet-payout {
+                text-align: center;
+                margin: 0px;
+                line-height: 36px;
+                color: #ADFC2D;
+            }
+            .bet-results {
+                position: relative;
+            }
+            .bet-result:first-child {
+                position: absolute;
+                left: 0px;
+                top: 0px
+            }
+            .bet-result:last-child {
+                position: absolute;
+                right: 0px;
+                top: 0px
+            }
+            .bet-result {
+                display: block;
+                margin: 0px auto;
+                width: 32%;
+                text-align: center;
+                line-height: 36px;
+            }
+            .window.bigwin {
+                border-width: 4px;
+            }
+            .window.bigwin .bet-result {
+                line-height: 32px;
+            }
+            .window.first{
+                border-color: #AAFF00;
+            }
+            .window.second{
+                border-color: #FFAA00;
+            }
+            .window.third{
+                border-color: #00AAFF;
+            }
+            .window.first .bet-result:first-child {
+                color: #ADFC2D;
+            }
+            .window.second .bet-result {
+                color: #ADFC2D;
+            }
+            .window.second .bet-result:last-child {
+                color: black;
+            }
+            .window.third .bet-result {
+                color: #ADFC2D;
+            }
+            .next-bet {
+                position: relative;
+                width: 90%;
+            }
+            .next-bet button {
+                display: block;
+                padding: 0px;
+                height: 40px;
+                line-height: 40px;
+                font-size: 18px;
+                width: 31%
+            }
+            .next-bet button:first-child {
+                position: absolute;
+                left: 0px;
+                top: 0px;
+            }
+            .next-bet button:last-child {
+                position: absolute;
+                right: 0px;
+                top: 0px;
+            }
+        </style>
+        <script>
+            var CLIENT_ID = ''
+              , REDIRECT_URI = ''
+            angular.module('main.main', [])
+            .provider('Betable', [function() {
+                var betable = new Betable('fgL6ZVZ4uNnp6ZKkU8hgFggdR8bMrLZ9')
+                this.$get = function () {
+                    return betable
+                }
+            }])
+            .controller('GameCtrl', ['$scope', '$timeout', '$interval','Betable', function($scope, $timeout, $interval, Betable) {
+                var _showBet = true;
+                $scope.phase = 'intro' 
+                $scope.playButtonText = "Play"
+                $scope.account = {
+                    first_name: "Tony"
+                  , last_name: "Hauber"
+                }
+                $scope.wallet = {
+                    real: '1000.00'
+                }
+                if (Betable.accessToken) {
+                    $scope.phase = 'game'
+                    $timeout(scrollToBottom)
+                }
+                $scope.play = function() {
+                    $scope.loading = true 
+                    $scope.playButtonText = "Loading..."
+                    Betable.authorize("https://localhost:8888/api/authorize")
+                }
+                $scope.betable = Betable
+                var winningBets = []
+                $interval(function() {
+                    var removeBet = null
+                    for (var i=0,length=winningBets.length,bet; i < length; i++) {
+                        bet = winningBets[i]
+                        bet.animationFrame = bet.animationFrame == undefined ? 0 : bet.animationFrame+1
+                        if (bet.animationFrame > 1000) {
+                            removeBet = i 
+                        }
+                    }
+                    winningBets.splice(i,1)
+                }, 500)
+                $scope.reveal = function(bet) {
+                    bet.revealed = true
+                    _showBet = true;
+                    if (bet.outcome == 'win') {
+                        $timeout(function () {
+                            winningBets.push(bet)
+                        }, 750)
+                    }
+                    $timeout(function () {
+                        scrollToBottom(null, 750);
+                    }, 750)
+                }
+                $scope.bet = function(wager) {
+                    _showBet = false;
+                    var bet = {
+                            wager: wager
+                        }
+                      , data = {
+                            "paylines": [[0,0,0]]
+                          , "wager": wager
+                        }
+                      , betFunc = Betable.unbackedBet
+                    if (!Betable.demoMode) {
+                        data.economy = 'real'
+                        data.currency = 'GBP'
+                        betFunc = Betable.bet
+                    }
+                    bet_history.push(bet)
+
+                    betFunc.call(Betable, '6W4wuEFYT_kBqI5h1ljE-S' , data , function(data) {
+                            result = []
+                            for (var i=0,length=data.window[0].length; i < length; i++) {
+                                result.push(data.window[0][i].replace('x', '×'))
+                            }
+                            bet.result = result
+                            bet.outcome = (data.outcomes[0] || {outcome:'lose'}).outcome
+                            bet.payout = data.payout
+                            bet.winRatio = parseFloat(bet.payout)/parseFloat(bet.wager)
+                            $scope.$apply()
+                        }, function (data) {
+                            alert("Somewhere some human screwed up and caused this error: "+ data.description)
+                        }
+                    )
+                }
+                $scope.showBet = function () {
+                    return _showBet
+                }
+                var bet_history = $scope.bet_history = []
+                function scrollToBottom(evt, time) {
+                    var $body = $('body')
+                    $body.animate({scrollTop:$body[0].scrollHeight}, time || 4000, 'swing', function() {})
+                }
+            }])
+        </script>
+
+        
+    </head>
+    <body>
+        <div ng-controller="GameCtrl">
+            <div id="window-container" ng-switch on="phase">
+                <div id="window-content" ng-switch-when='game'>
+                    <div class="fade"></div>
+                    <div class="toolbar" ng-switch on="betable.demoMode">
+                        <div class="toolbar-content" ng-switch-when="true">
+                            <a class="link play-for-real" ng-click="betable.playForReal()">[Play For Real Money]</a>
+                            <p>Demo Mode<p>
+                            <p class="powered-by">Powered by betable <span class="mini"> and Robots</span></p>
+                        </div>
+                        <div class="toolbar-content" ng-switch-default>
+                            <a class="link deposit" ng-click="betable.showDeposit()">[Deposit]</a>
+                            <p class="dollars">{{wallet.real}}</p>
+                            <p>{{account.first_name}} {{account.last_name}}<p>
+                            <p class="powered-by">Powered by betable <span class="mini"> and Robots</span></p>
+                        </div>
+                    </div>
+                    <div class="intro list-item">
+                        <p>Welcome Simple Human,</p>
+                        <br>
+                        <p>Match any three symbols and win. If you bet &pound;1 and spin</p>
+                        <br>
+                        <p class='bet'>&times;10 &times;10 &times;10</p>
+                        <br>
+                        <p>You would win &pound;10.</p>
+                        <br>
+                        <p> Have fun playing while we enslave your race.</p>
+                        <br>
+                        <p>Love,</p>
+                        <p>The Robots</p>
+                        
+                    </div>
+                    <div class="window list-item" ng-repeat="bet in bet_history" data-index="{{bet_history.indexOf(bet)}}" ng-switch on="!!bet.result" ng-class="{first:bet.animationFrame%3==0, second:bet.animationFrame%3==1, third:bet.animationFrame%3==2, bigwin:bet.winRatio>2}">
+                        <div class="cover" ng-switch-default>
+                            Loading...
+                        </div>
+                        <div ng-switch-when="true">
+                            <div class="cover" ng-class="{revealed: bet.revealed}" ng-click="reveal(bet)">
+                                Tap to reveal
+                            </div>
+                            <div ng-switch on="bet.animationFrame>=3">
+                                <div ng-switch-when="true">
+                                    <p class="bet-payout">You Win &pound;{{bet.payout}}!</p>
+                                </div>
+                                <div class="bet-results" ng-switch-default>
+                                    <p class="bet-result">{{bet.result[0]}}</p>
+                                    <p class="bet-result">{{bet.result[1]}}</p>
+                                    <p class="bet-result">{{bet.result[2]}}</p>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                    <div class="next-bet list-item" ng-show="showBet()">
+                        <button ng-click="bet('1.00')">&pound;1</button>
+                        <button ng-click="bet('0.50')">50p</button>
+                        <button ng-click="bet('0.25')">25p</button>
+                    </div>
+                    <div class="toolbar-filler"></div>
+                </div>
+                <div id="window-content" ng-switch-when='intro'>
+                    <h1>ROBOSLOTS</h1>
+                    <button class="play" ng-click="play()" ng-disabled="loading" >{{playButtonText}}</button>
+                </div>
+             </div>
+        </div>
+    </body>
+</html>
