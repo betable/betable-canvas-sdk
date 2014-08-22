@@ -276,19 +276,14 @@
                     var bet = {
                             wager: wager
                         }
-                      , data = {
-                            "paylines": [[0,0,0]]
-                          , "wager": wager
-                        }
-                      , betFunc = Betable.unbackedBet
-                    if (!Betable.demoMode) {
-                        data.economy = 'real'
-                        data.currency = 'GBP'
-                        betFunc = Betable.bet
+                    var data = {
+                        "paylines": [[0,0,0]]
+                      , "wager": wager
+                      , "economy": 'real'
+                      , "currency": 'GBP'
                     }
                     bet_history.push(bet)
-
-                    betFunc.call(Betable, '6W4wuEFYT_kBqI5h1ljE-S' , data , function(data) {
+                    Betable.bet('6W4wuEFYT_kBqI5h1ljE-S' , data , function(data) {
                             result = []
                             for (var i=0,length=data.window[0].length; i < length; i++) {
                                 result.push(data.window[0][i].replace('x', '×'))
@@ -299,7 +294,7 @@
                             bet.winRatio = parseFloat(bet.payout)/parseFloat(bet.wager)
                             $scope.$apply()
                         }, function (data) {
-                            alert("Somewhere some human screwed up and caused this error: "+ data.description)
+                            alert("Somewhere some human screwed up and caused this error: "+ data.error)
                         }
                     )
                 }

@@ -1,4 +1,5 @@
 ;
+(function () {
 /*
  * Copyright (c) 2012, Betable Limited
  * All rights reserved.
@@ -26,17 +27,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var Mode = {
+
+window.Betable = function Betable(clientID) {
+    this.clientID = clientID
+    this.mode = Betable.Mode.StandAlone
+    this.setupWithLocation(window.location)
+    this.endpoint = Betable.betableAPIURL
+}
+
+Betable.Mode = {
     FullScreen: 'fullscreen'
   , StandAlone: 'standalone'
   , Canvas: 'canvas'
-}
-
-function Betable(clientID) {
-    this.clientID = clientID
-    this.mode = Mode.StandAlone
-    this.setupWithLocation(window.location)
-    this.endpoint = Betable.betableAPIURL
 }
 
 Betable.betableURL = 'https://betable.com'
@@ -59,9 +61,25 @@ Betable.prototype.setupWithLocation = function Betable_setupWithLocation(loc) {
     this.accessToken = search.accessToken
     this.demoMode = !!parseInt(search.demoMode)
     if (!!parseInt(search.fullscreen)) {
-        this.mode = Mode.FullScreen
+        this.mode = Betable.Mode.FullScreen
     } else if (!!parseInt(search.canvas)) {
-        this.mode = Mode.Canvas
+        this.mode = Betable.Mode.Canvas
+    }
+    if (this.demoMode) {
+        this._demoWallet = {
+            real: {
+                balance: search.init_balance || '5000.00' 
+              , currency: 'GBP'
+              , economy: 'real'
+              , credits: {}
+            }, 
+            sandbox: {
+                balance: search.init_balance || '5000.00' 
+              , currency: 'GBP'
+              , economy: 'sandbox'
+              , credits: {}
+            }
+        }
     }
     this.manifest = search.manifest
 }
@@ -89,7 +107,7 @@ Betable.prototype.popup = function Betable_popup(url) {
 }
 
 Betable.prototype.authorize = function Betable_authorize(redirectURI, client_user_id) {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         alert("Error: You can only call authorize in Stand Alone mode")
     } else if (this.demoMode) {
         client_user_id = client_user_id || (Math.random()+1).toString(36).substr(-20,20)
@@ -105,17 +123,17 @@ Betable.prototype.authorize = function Betable_authorize(redirectURI, client_use
 }
 
 Betable.prototype.showWallet = function Betable_showWallet() {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         window.location = this.url('wallet')
     }
 }
 Betable.prototype.playForReal = function Betable_playForReal() {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         window.location = this.url('wallet')
     }
 }
 Betable.prototype.showDeposit = function Betable_showDeposit() {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         window.location = this.url('wallet/deposit')
     } 
 }
@@ -123,7 +141,7 @@ Betable.prototype.showRedeem = function Betable_showRedeem(promotion) {
     //TODO Support this
 }
 Betable.prototype.showWithdraw= function Betable_showWithdraw() {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         window.location = this.url('wallet/withdraw')
     }
 }
@@ -131,7 +149,7 @@ Betable.prototype.showSupport = function Betable_showSupport() {
     //TODO Support this
 }
 Betable.prototype.goHome = function Betable_goHome() {
-    if(this.mode != Mode.StandAlone) {
+    if(this.mode != Betable.Mode.StandAlone) {
         window.location = this.url('')
     }
 }
@@ -140,19 +158,78 @@ Betable.prototype.account = function Betable_account(callback, errback) {
     this.xhr('GET', '/account', void 0, callback, errback)
 }
 
+Betable.prototype._settleDemoWallet = function Betable__settleDemoWallet(wager, betData, economy, creditGame) {
+    //credit wallet
+      var balance = this._demoWallet[economy].balance
+      , newBalance = Betable.Decimal.add(balance, betData.payout)
+      , credits = this._demoWallet[economy].credits
+      , creditBalance
+      , newCreditBalance
+      , wallet
+    this._demoWallet[economy].balance = newBalance
+    for (var game in betData.credits) {
+        credits[game] = Betable.Decimal.add(credits[game], betData.credits[game])
+    }
+    //debit wallet
+    if (creditGame) {
+        wallet = this._demoWallet[economy].credits
+        wallet[creditGame] = Betable.Decimal.sub(wallet[creditGame], wager)
+    } else {
+        wallet = this._demoWallet[economy]
+        wallet.balance = Betable.Decimal.sub(wallet.balance, wager)
+    }
+}
+
 Betable.prototype.bet = function Betable_bet(gameID, data, callback, errback) {
-    this.xhr(
-        'POST'
-      , '/games/' + gameID + '/bet'
-      , data
-      , callback
-      , errback
-      , true
-    )
+    if (this.demoMode) {
+        var economy = data.economy
+          , wager = data.wager
+          , balance = this._demoWallet[economy].balance
+        if (parseFloat(wager) > parseFloat(balance)) {
+            setTimeout(function () {
+                errback({error: "insufficient_funds"})
+            }, 0)
+        }
+        delete data.economy
+        delete data.currency
+        var self = this
+        this.unbackedBet(gameID, data, function(betData) {
+            self._settleDemoWallet(wager, betData, economy)
+            callback(betData)
+        }, errback);
+    } else {
+        this.xhr(
+            'POST'
+          , '/games/' + gameID + '/bet'
+          , data
+          , callback
+          , errback
+          , true
+        )
+    }
 }
 
 Betable.prototype.betCredits = function Betable_betCredits(gameID, creditGameID, data, callback, errback) {
-    this.bet(gameID +'/'+ creditGameID, data, callback, errback)
+    if (this.demoMode) {
+        var economy = data.economy
+          , wager = data.wager
+          , balance = this._demoWallet[economy].credits[creditGameID]
+        if (parseFloat(wager) > parseFloat(balance)) {
+            setTimeout(function () {
+                errback({error: "insufficient_funds"})
+            }, 0)
+        }
+        delete data.economy
+        delete data.currency
+
+        var self = this
+        this.unbackedCreditBet(gameID, creditGameID, data, function(betData) {
+            self._settleDemoWallet(wager, betData, economy, creditGameID)
+            callback(betData)
+        }, errback);
+    } else {
+        this.bet(gameID +'/'+ creditGameID, data, callback, errback)
+    }
 }
 
 Betable.prototype.unbackedBet = function Betable_unbackedBet(gameID, data, callback, errback) {
@@ -169,14 +246,43 @@ Betable.prototype.unbackedBetCredits = function Betable_unbackedBetCredits(gameI
     this.unbackedBet(gameID +'/'+ creditGameID, data, callback, errback)
 }
 
-Betable.prototype.wallet = function Betable_wallet(games, callback, errback) {
-    var data = {}
-    games = games || []
-    if (!(games instanceof Array)) {
-        games = [games]
+Betable.prototype._requestDemoWallet = function Betable__requestDemoWallet(games, callback) {
+    var self = this
+    setTimeout(function () {
+        var outputWallet = {}
+          , newEconomy
+          , oldEconomy
+        for (var economy in self._demoWallet) {
+            outputWallet[economy] = newEconomy = {}
+            oldEconomy = self._demoWallet[economy]
+            for (var info in oldEconomy) {
+                if (info != 'credits') {
+                    newEconomy[info] = oldEconomy[info]
+                }
+            }
+            if (games && games.length) {
+                newEconomy.credits = {}
+                for (var i=0, len = games.length, game; i < len; i++) {
+                    game = games[i]
+                    newEconomy.credits[game] = oldEconomy.credits[game] || '0.00'
+                }
+            }
+        }
+        callback(output)
+    }, 0)
+}
+
+Betable.prototype.wallet = function Betable_wallet(games, callback) {
+    if (this.demoMode) {
+    } else {
+        var data = {}
+        games = games || []
+        if (!(games instanceof Array)) {
+            games = [games]
+        }
+        data.games = games.join(',')
+        this.xhr('GET', '/account/wallet', data, callback, errback)
     }
-    data.games = games.join(',')
-    this.xhr('GET', '/account/wallet', data, callback, errback)
 }
 
 Betable.prototype.xhr = function Betable_xhr(
@@ -246,3 +352,29 @@ Betable.prototype._xhr = function Betable__xhr(
     }
 }
 ;
+Betable.Decimal = (function(){
+    function toi(s) {
+        return +s.replace('.', '')
+    }
+    function toa(i) {
+        var s = i.toString()
+        if (s.length < 3) {
+            if (s < 0) {
+                s = "-" + ("00"+(-s)).slice(-3)
+            } else {
+                s = ("00"+s).slice(-3)
+            }
+        }
+        return s.replace(/(\d\d)$/, ".$1")
+    }
+
+    return {
+        add: function add(a, b) {
+            return toa(toi(a) + toi(b))
+        },
+        sub: function sub(a, b) {
+            return toa(toi(a) - toi(b))
+        }
+    }
+})()
+})();
