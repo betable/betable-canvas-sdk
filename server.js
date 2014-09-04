@@ -2,11 +2,14 @@ var http = require('http')
   , https = require('https')
   , path = require('path')
   , fs = require('fs')
-  , client_id = process.env.CLIENT_ID
-  , client_secret = process.env.CLIENT_SECRET
   , redirect_uri = process.env.REDIRECT_URI || 'https://localhost:8888/api/authorize'
   , crypto = require('crypto')
   , url = require('url')
+  , manifest = require(process.cwd() + '/manifest')
+  , client_id = manifest.client_id
+  , client_secret = manifest.client_secret
+
+console.log(manifest)
  
 //helper function handles file verification
 function getFile(localFolder, runningFolder, filePath,res,page404){
@@ -54,7 +57,7 @@ function requestHandler(req, res) {
       , runningFolder = process.cwd() + '/'
       , page404 = localFolder + '404.html'
 
-    if (!requrl.search('/api/')) {
+    if (!requrl.search('/api')) {
         var options = {
             host: 'api.betable.com'
         }
@@ -65,7 +68,6 @@ function requestHandler(req, res) {
                 'Authorization': 'Basic '+ new Buffer(client_id+":"+client_secret).toString('base64')
               , 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            console.log("URL:", url)
             var query = url.parse(req.url, true).query
               , code = req.url.split('?')[1].split('&')[0].split('=')[1]
               , write = null

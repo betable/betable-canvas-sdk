@@ -1,19 +1,40 @@
-1. Make your game start at index.html
-2. run CLIENT_ID=<Your Client ID> CLIENT_SECRET=<Your Client Secret> node server.js
-3. Visit https://localhost:8888
 
-    var data = {
-            "paylines": [[0,0,0]]
-          , "wager": wager
+
+#Intro
+
+This is an SDK that allows you to build games that are Betable Canvas compliant, meaning that they can be added the to Betable Games library and be played at https://betable.com
+
+#Starting from scratch
+
+Download the SDK
+
+Create a folder to house your game
+
+Create an index.html file in your game folder
+
+add this to your index.html
+
+    <script src="/betable.js"></script>
+    <script>
+        var betable = Betable("<YOUR CLIENT ID>")
+        if (betable.authorized) {
+            //Start the game
+        } else {
+            betable.authorize("<YOUR REDIRECT URI>")
         }
-      , betFunc = Betable.unbackedBet
+    </script>
 
-    if (!Betable.demoMode) {
-        data.economy = 'real'
-        data.currency = 'GBP'
-        betFunc = Betable.bet
+Create your manifest.js
+
+    module.exports = {
+        ClientID = "<YOUR CLIENT ID>"
+      , ClientSecret = "<YOUR CLIENT SECRET>"
     }
-    bet_history.push(bet)
-    betFunc.call(Betable, '<Game ID>' , data , <Callback>)
 
-   
+Start the test server
+    node /path/to/SDK/server.js
+
+Go to http://localhost:8888
+
+Boom you have a canvas ready betable game.
+

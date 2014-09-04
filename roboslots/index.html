@@ -217,8 +217,6 @@
             }
         </style>
         <script>
-            var CLIENT_ID = ''
-              , REDIRECT_URI = ''
             angular.module('main.main', [])
             .provider('Betable', [function() {
                 var betable = new Betable('fgL6ZVZ4uNnp6ZKkU8hgFggdR8bMrLZ9')
@@ -237,7 +235,7 @@
                 $scope.wallet = {
                     real: '1000.00'
                 }
-                if (Betable.accessToken) {
+                if (Betable.authorized) {
                     $scope.phase = 'game'
                     $timeout(scrollToBottom)
                 }
