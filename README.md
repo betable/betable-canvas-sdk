@@ -39,7 +39,7 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
     node /path/to/SDK/server.js
 ```
 
-8. Go to http://localhost:8888
+* Go to `http://localhost:8888`
 
 Boom you have a canvas ready betable game.
 
