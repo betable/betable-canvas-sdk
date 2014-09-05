@@ -2,10 +2,10 @@ First go to https://developers.betable.com. If you are not signed in, sign in wi
 
 When you are logged in you should see a big button in the top left that says "Create a new game"
 
-![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/stepA.png)
-![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/stepB.png)
-![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/stepC.png)
-![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/stepD.png)
-![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/stepE.png)
+![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/StepA.md)
+![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/StepB.png)
+![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/StepC.png)
+![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/StepD.png)
+![](https://github.com/betable/betable-canvas-sdk/blob/master/example/images/StepE.png)
 
 
