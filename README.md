@@ -10,7 +10,7 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
 * Create a folder to house your game
 * Create an index.html file in your game folder
 * Make sure to set your redirect URI to "https://localhost:8888/authorize"
-* add this to your index.html
+* Add this to your index.html
 
 ```HTML
     <script src="/betable.js"></script>
@@ -60,8 +60,8 @@ All apps need to support demo mode, but besides clearly displaying that the play
 
 ##Things to know about demo mode
 
-* Calls to `bet` and `creditBet` will work the same as in non demo mode
-* Calls to `wallet` will seem to work the same but will actually be referencing a non existent demo wallet, it will be debited and credited correctly when `bet` and `creditBet` are called
+* Calls to `bet` and `creditBet` will work the same as in non demo mode.
+* Calls to `wallet` will seem to work the same but will actually be referencing a non existent demo wallet, it will be debited and credited correctly when `bet` and `creditBet` are called.
 * Calls to `account` in demo mode will return a null user.
 * The token you have in demo mode will not allow you to make a real bet even if you tried.
 * You must have a button in demo mode that allows the user to play in non-demo mode.
