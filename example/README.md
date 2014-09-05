@@ -4,7 +4,7 @@ To make a betable game you will need a betable developer account. If you do not 
 
 ##Step 1. Setting up your app on betable developers
 
-We are going to configure a simple dice game with this rule. Roll a 4 and above and win your money back, roll a 6 and win 3.5 your money back, roll a 3 or below and lose. To do this you are going to create a new game in betable developers and choose the paytable game configuration. Then you are going to set up 6 outcomes (one for each dice roll) each with a probability of approxamately 1/6 chance of happening (set 1 and 2 to 16.6666% and the rest to 16.6667% so that the probability is exactly 100%). For mulitpliers set 6 to 3.5, then set 4 and 5 to 1, set the rest to 0. For a walkthrough on setting up this game go [here](DICE_GAME_SETUP.md)
+We are going to configure a simple dice game with this rule. Roll a 4 and above and win your money back, roll a 6 and win 3.5 your money back, roll a 3 or below and lose. To do this you are going to create a new game at http://developers.betable.com and choose the paytable game configuration. Then you are going to set up 6 outcomes (one for each dice roll) each with a probability of approxamately 1/6 chance of happening (set 1 and 2 to 16.6666% and the rest to 16.6667% so that the probability is exactly 100%). For mulitpliers set 6 to 3.5, then set 4 and 5 to 1, set the rest to 0. For a walkthrough on setting up this game go [here](DICE_GAME_SETUP.md)
 
 ##Step 2. Setup the game
 
