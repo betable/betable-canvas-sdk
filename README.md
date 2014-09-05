@@ -4,6 +4,8 @@
 
 This is an SDK that allows you to build games that are Betable Canvas compliant, meaning that they can be added the to Betable Games library and be played at https://betable.com
 
+If you are new to all of this the best place to start is [here](example/)
+
 #Starting from scratch
 
 * Download the SDK [:inbox_tray:](https://github.com/betable/betable-canvas-sdk/releases/download/0.1.0/release.zip)
