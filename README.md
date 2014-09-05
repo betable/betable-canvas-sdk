@@ -6,12 +6,13 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
 
 #Starting from scratch
 
-1. Download the SDK
-2. Create a folder to house your game
-3. Create an index.html file in your game folder
-4. Make sure to set your redirect URI to "https://localhost:8888/authorize"
-5. add this to your index.html
+* Download the SDK
+* Create a folder to house your game
+* Create an index.html file in your game folder
+* Make sure to set your redirect URI to "https://localhost:8888/authorize"
+* add this to your index.html
 
+```HTML
     <script src="/betable.js"></script>
     <script>
         var betable = Betable("<YOUR CLIENT ID>")
@@ -21,19 +22,22 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
             betable.authorize("https://localhost:8888/authorize")
         }
     </script>
+```
 
-6. Create your manifest.js
+* Create your manifest.js
 
+```JS
     module.exports = {
         ClientID = "<YOUR CLIENT ID>"
       , ClientSecret = "<YOUR CLIENT SECRET>"
     }
+```
 
+* Start the test server
 
-
-7. Start the test server
-
+```bash
     node /path/to/SDK/server.js
+```
 
 8. Go to http://localhost:8888
 
