@@ -33,7 +33,7 @@ Add this to your index.html
 <script src=betable.js></script>
 <script>
     window.onload = function onload() {
-        window.betable = new Betable('vlWJEIgM2EwpORM9WzcDfAMaUSe8eiRU')
+        window.betable = new Betable('<CLIENT ID FROM STEP 1>')
         if (!betable.authorized) {
             betable.authorize('https://localhost:8888/api/authorize')
         }
@@ -47,7 +47,7 @@ Add this to your index.html
     function bet() {
         var interval = setInterval(function () { setDice(String(Math.floor(Math.random()*6)+1)) }, 100)
         setResult()
-        betable.bet('UBopfVjP9ru1kZkZxxzoKW', {currency: 'GBP', economy: 'sandbox', wager: '0.50'}, function (data) {
+        betable.bet('<GAME ID FROM STEP 1>', {currency: 'GBP', economy: 'sandbox', wager: '0.50'}, function (data) {
             clearInterval(interval)
             setDice(data.outcome)
             setResult(data.payout)
@@ -101,8 +101,8 @@ Your manifest is how you setup all of your game configuration. For this game the
 
 ```
 module.exports = {
-   client_id: "vlWJEIgM2EwpORM9WzcDfAMaUSe8eiRU"
- , client_secret: "qmcwcs6eAAhGwWy69JmqnZPLw6O5EWc7"
+   client_id: "<CLIENT ID FROM STEP 1>"
+ , client_secret: "<CLIENT SECRET FROM STEP 1>"
 }
 ```
 
