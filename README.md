@@ -66,19 +66,19 @@ All apps need to support demo mode, but besides clearly displaying that the play
 
 #API Calls
 
-##`bet(gameID, data, callback, errback)`
+####`bet(gameID, data, callback, errback)`
 
 This call allows you to make a bet on a game. The `gameID` is the game you wish to make a bet on. The `data` is a javascript object containing all the data about the bet such as wager and paylines, (you can read more about this data [here](https://developers.betable.com/docs/api/#post-gamesgameidbet)). The `callback` is a function that will be called when the bet is completed, it will receive a js object that contains the data of the bet, the format of that object can be seen [here](https://developers.betable.com/docs/api/#post-gamesgameidbet). The `errback` is a function that will be called if the bet could not be completed successfuly. It takes an javascript object that represents the error.
 
-##`creditBet(gameID, creditGameID, data, callback, errback)`
+####`creditBet(gameID, creditGameID, data, callback, errback)`
 
 This call allows you to make a bet on a game. The `gameID` is the game that the credits were recieved on. The `creditGameID is the game that the credits will be bet on. The `data` is a javascript object containing all the data about the bet such as wager and paylines, (you can read more about this data [here](https://developers.betable.com/docs/api/#post-gamesgameidbet)). The `callback` is a function that will be called when the bet is completed, it will receive a js object that contains the data of the bet, the format of that object can be seen [here](https://developers.betable.com/docs/api/#post-gamesgameidbet). The `errback` is a function that will be called if the bet could not be completed successfuly. It takes an javascript object that represents the error.
 
-##`unbackedBet(gameID, data, callback, errback)`
+####`unbackedBet(gameID, data, callback, errback)`
 
 This call allows you to make a bet on a game that will not result in any exchange of money, you can user this when you wish to represent a bet in your game that the user has not committed to spending any money on. The `gameID` is the game that the credits were recieved on. The `creditGameID is the game that the credits will be bet on. The `data` is a javascript object containing all the data about the bet such as wager and paylines, (you can read more about this data [here](https://developers.betable.com/docs/api/#post-gamesgameidbet)). The `callback` is a function that will be called when the bet is completed, it will receive a js object that contains the data of the bet, the format of that object can be seen [here](https://developers.betable.com/docs/api/#post-gamesgameidbet). The `errback` is a function that will be called if the bet could not be completed successfuly. It takes an javascript object that represents the error.
 
-##`unbackedCreditBet(gameID, creditGameID, data, callback, errback)`
+####`unbackedCreditBet(gameID, creditGameID, data, callback, errback)`
 
 This call allows you to make a bet on a game that will not result in any exchange of money, you can user this when you wish to represent a bet in your game that the user has not committed to spending any money on. The `gameID` is the game that the credits were recieved on. The `creditGameID is the game that the credits will be bet on. The `data` is a javascript object containing all the data about the bet such as wager and paylines, (you can read more about this data [here](https://developers.betable.com/docs/api/#post-gamesgameidbet)). The `callback` is a function that will be called when the bet is completed, it will receive a js object that contains the data of the bet, the format of that object can be seen [here](https://developers.betable.com/docs/api/#post-gamesgameidbet). The `errback` is a function that will be called if the bet could not be completed successfuly. It takes an javascript object that represents the error.
 
