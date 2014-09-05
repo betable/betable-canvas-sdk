@@ -28,8 +28,8 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
 
 ```JS
     module.exports = {
-        ClientID = "<YOUR CLIENT ID>"
-      , ClientSecret = "<YOUR CLIENT SECRET>"
+       client_id: "<YOUR CLIENT ID>"
+     , client_secret: "<YOUR CLIENT ID>"
     }
 ```
 
