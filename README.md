@@ -6,7 +6,7 @@ This is an SDK that allows you to build games that are Betable Canvas compliant,
 
 #Starting from scratch
 
-* Download the SDK :inbox_tray:
+* Download the SDK [:inbox_tray:](http://google.com)
 * Create a folder to house your game
 * Create an index.html file in your game folder
 * Make sure to set your redirect URI to "https://localhost:8888/authorize"
