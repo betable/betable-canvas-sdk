@@ -51,12 +51,12 @@ The only difference from above and running your own server is that you can set y
 
     http://yourdomain.com/your/index/path.html?access_token=<access_token>
 
-Your authorization endpoint will be called one of 2 ways. Either with a code or a client_user_id. If its called with a code, then you need to make a request for an access_token. You can find out how to do that [here](https://developers.betable.com/docs/api/#authentication). If you receive a client_user_id then you need to request an unbacked token (a demo token). You can find out how to do that [here](https://developers.betable.com/docs/api/features/#unbacked-bets).
+Your authorization endpoint will be called one of 2 ways. Either with a `code` or a `client_user_id`. If its called with a `code`, then you need to make a request for an access_token. You can find out how to do that [here](https://developers.betable.com/docs/api/#authentication). If you receive a `client_user_id` then you need to request an unbacked token (a demo token). You can find out how to do that [here](https://developers.betable.com/docs/api/features/#unbacked-bets).
 
 
 #Demo Mode
 
-All apps need to support demo mode, but besides clearly displaying that the player is in demo mode, you do not need to make many considerations for it. Simply put, in demo mode, the user is not making real bets, and all of their money is coming out of a demo wallet
+All apps need to support demo mode, but besides clearly displaying that the player is in demo mode, you do not need to make many considerations for it. Simply put, in demo mode, the user is not making real bets, and all of their money is coming out of a demo wallet.
 
 ##Things to know about demo mode
 
