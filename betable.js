@@ -53,7 +53,7 @@ window.Betable = function Betable(clientID) {
             search[key]=decodeURIComponent(value)
         }
         _accessToken = search.accessToken
-        this.demoMode = !!parseInt(search.demoMode)
+        this.demoMode = search.demoMode == 'true'
         if (search.fullscreen == 'true') {
             this.mode = Betable.Mode.FullScreen
         } else if (search.canvas == 'true') {
