@@ -95,7 +95,7 @@ Add this to your index.html
 
 ```
 
-##Step 5 setup your manifest
+##Step 5. setup your manifest
 
 Your manifest is how you setup all of your game configuration. For this game the only things we are going to configure are the client_id and client_secret.
 
@@ -105,4 +105,11 @@ module.exports = {
  , client_secret: "qmcwcs6eAAhGwWy69JmqnZPLw6O5EWc7"
 }
 ```
+
+##Step 6. Run the test server
+
+To do this first cd into the `game` directory and run `node ../betable-canvas-sdk/server.js`. You must run this command from the game directory.
+
+Now go to https://localhost:8888 and enjoy your game. To activate your game in demo mode go to https://localhost:8888?demoMode=true
+
 
