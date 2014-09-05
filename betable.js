@@ -35,6 +35,7 @@ window.Betable = function Betable(clientID) {
         this.clientID = clientID
         this.mode = Betable.Mode.StandAlone
         this.setupWithLocation(window.location)
+        //Setup porthole
         this.endpoint = Betable.betableAPIURL
     }
     this.setupWithLocation = function Betable_setupWithLocation(loc) {
@@ -119,6 +120,7 @@ window.Betable = function Betable(clientID) {
     }
 
     this.chrome = function betable_chrome(action, params) {
+        params = params || {}
         switch(this.mode) {
             case Betable.Mode.StandAlone:
                 params.action = action
@@ -291,7 +293,13 @@ window.Betable = function Betable(clientID) {
       , callback
       , errback
     ) {
-        _api(this.endpoint, method, path + '?access_token=' + _accessToken, body, callback, errback)
+        if (this.authorized && !_accessToken) {
+            this.onAuthorize(function () {
+                _api(this.endpoint, method, path + '?access_token=' + _accessToken, body, callback, errback)
+            })
+        } else {
+            _api(this.endpoint, method, path + '?access_token=' + _accessToken, body, callback, errback)
+        }
     }
 
     var _api = function Betable__api(

@@ -1,0 +1,64 @@
+<html>
+<head>
+<script src=betable.js></script>
+<script>
+    window.onload = function onload() {
+        window.betable = new Betable('vlWJEIgM2EwpORM9WzcDfAMaUSe8eiRU')
+        if (!betable.authorized) {
+            betable.authorize('https://localhost:8888/api/authorize')
+        }
+
+        if (betable.demoMode) {
+            document.getElementById("demoMode").innerHTML = "You are playing in Demo Mode"
+        }
+        setDice('1')    
+    }
+
+    function bet() {
+        var interval = setInterval(function () { setDice(String(Math.floor(Math.random()*6)+1)) }, 100)
+        setResult()
+        betable.bet('UBopfVjP9ru1kZkZxxzoKW', {currency: 'GBP', economy: 'sandbox', wager: '0.50'}, function (data) {
+            clearInterval(interval)
+            setDice(data.outcome)
+            setResult(data.payout)
+        }, function (data) {
+            console.log(arguments)
+            alert("An error has occurred:"+data.description)
+        })
+    }
+    function deposit() {
+        betable.chrome('deposit')
+    }
+
+    DiceSides = {
+        '1': '&#9856;'
+      , '2': '&#9857;'
+      , '3': '&#9858;'
+      , '4': '&#9859;'
+      , '5': '&#9860;'
+      , '6': '&#9861;'
+    }
+    function setDice(result) {
+        document.getElementById('dice').innerHTML = DiceSides[result]
+    }
+    function setResult(result) {
+        var resString = ''
+        if (result) {
+            resString = "You Didn't Win"
+            if (parseFloat(result)) {
+                resString = "You won &pound;"+result
+            }
+        }
+        document.getElementById('result').innerHTML = resString
+    }
+</script>
+</head>
+<body style="text-align:center">
+    <div id="demoMode"></div>
+    <div id="dice" style="font-size:100px"></div>
+    <div id="result"></div>
+    <button onclick="bet()" id="betButton">Bet 50p</button>
+    <button onclick="deposit()" id="depositButton">Deposit</button>
+    <div id="wallet"></div>
+</body>
+</html>
