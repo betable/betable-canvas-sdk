@@ -29,8 +29,8 @@
 
 
 window.Betable = function Betable(clientID) {
+    var _accessToken;
     this.init = function () {
-        var _accessToken;
         this.authorized = false;
         this.clientID = clientID
         this.mode = Betable.Mode.StandAlone
