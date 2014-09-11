@@ -52,10 +52,14 @@ window.Betable = function Betable(clientID, search_options) {
             value = keyvalue[1]
             search[key]=decodeURIComponent(value)
         }
-        seach_options = search_options || {}
-        for(var so in search_options) {
-            search[so] = search_options[so]
+
+        if(this.mode === Betable.Mode.StandAlone) {
+            seach_options = search_options || {}
+            for(var so in search_options) {
+                search[so] = search_options[so]
+            }
         }
+
         _accessToken = search.accessToken
         this.demoMode = search.demoMode == 'true'
         if (search.fullscreen == 'true') {
