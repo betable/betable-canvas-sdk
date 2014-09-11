@@ -28,17 +28,17 @@
  */
 
 
-window.Betable = function Betable(clientID) {
+window.Betable = function Betable(clientID, search_options) {
     var _accessToken;
     this.init = function () {
         this.authorized = false;
         this.clientID = clientID
         this.mode = Betable.Mode.StandAlone
-        this.setupWithLocation(window.location)
+        this.setupWithLocation(window.location, search_options)
         //Setup porthole
         this.endpoint = Betable.betableAPIURL
     }
-    this.setupWithLocation = function Betable_setupWithLocation(loc) {
+    this.setupWithLocation = function Betable_setupWithLocation(loc, search_options) {
         var parts = loc.search.substr(1).split('&')
           , search = {}
           , part
@@ -51,6 +51,10 @@ window.Betable = function Betable(clientID) {
             key = keyvalue[0]
             value = keyvalue[1]
             search[key]=decodeURIComponent(value)
+        }
+        seach_options = search_options || {}
+        for(var so in search_options) {
+            search[so] = search_options[so]
         }
         _accessToken = search.accessToken
         this.demoMode = search.demoMode == 'true'
