@@ -86,4 +86,20 @@ This call allows you to make a bet on a game that will not result in any exchang
 
 This call allows you to make a bet on a game that will not result in any exchange of money, you can user this when you wish to represent a bet in your game that the user has not committed to spending any money on. The `gameID` is the game that the credits were recieved on. The `creditGameID` is the game that the credits will be bet on. The `data` is a javascript object containing all the data about the bet such as wager and paylines, (you can read more about this data [here](https://developers.betable.com/docs/api/#post-gamesgameidbet)). The `callback` is a function that will be called when the bet is completed, it will receive a js object that contains the data of the bet, the format of that object can be seen [here](https://developers.betable.com/docs/api/#post-gamesgameidbet). The `errback` is a function that will be called if the bet could not be completed successfuly. It takes an javascript object that represents the error.
 
+####`canIGamble(callback, errback)`
+
+It is not necessary for you to check if a user can gamble. All of our systems protect against users trying to gamble and deposit in jurisdictions where it is not allowed. You may however want to display a message to user's that try to access your game from outside of a legal gambling jurisdiction before they try and bet or deposit. To check their current gambling eligibility, make this call.
+
+This call checks the geolocation of the user and responds with whether the user can gamble or not. The callback will be called with an object that contains the data about whether they can gamble. It will look like this:
+
+```
+{
+  country: "United States",
+  country_code: "US",
+  can_gamble: false
+}
+```
+
+The important bit of this is the can_gamble field. If it is true then they are in a jurisdiction where they can gamble.
+
 #Chrome Calls

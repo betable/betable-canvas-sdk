@@ -6,12 +6,22 @@
         window.betable = new Betable('vlWJEIgM2EwpORM9WzcDfAMaUSe8eiRU')
         if (!betable.authorized) {
             betable.authorize('https://localhost:8888/api/authorize')
+        } else {
+            document.getElementById("demoMode").innerHTML = "Checking your gambling eligibility..."
+            betable.canIGamble(function (data) {
+                console.log(data)
+                if (data.can_gamble) {
+                    var demoModeText = ""
+                    if (betable.demoMode) {
+                        demoModeText = "You are playing in Demo Mode"
+                    }
+                    document.getElementById("demoMode").innerHTML = demoModeText
+                    setDice('1')    
+                } else {
+                    document.getElementById('body').innerHTML = "You are not in a gambling jurisdiction"
+                }
+            })
         }
-
-        if (betable.demoMode) {
-            document.getElementById("demoMode").innerHTML = "You are playing in Demo Mode"
-        }
-        setDice('1')    
     }
 
     function bet() {
@@ -53,7 +63,7 @@
     }
 </script>
 </head>
-<body style="text-align:center">
+<body style="text-align:center" id="body">
     <div id="demoMode"></div>
     <div id="dice" style="font-size:100px"></div>
     <div id="result"></div>

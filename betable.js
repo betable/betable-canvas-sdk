@@ -38,7 +38,7 @@ window.Betable = function Betable(clientID, search_options) {
         //Setup porthole
         this.endpoint = Betable.betableAPIURL
     }
-    this.setupWithLocation = function Betable_setupWithLocation(loc, search_options) {
+    this.setupWithLocation = function Betable_setupWithLocation(loc, searchOptions) {
         var parts = loc.search.substr(1).split('&')
           , search = {}
           , part
@@ -54,9 +54,10 @@ window.Betable = function Betable(clientID, search_options) {
         }
 
         if(this.mode === Betable.Mode.StandAlone) {
-            seach_options = search_options || {}
-            for(var so in search_options) {
-                search[so] = search_options[so]
+            //Override default behaviour with searchOptions
+            searchOptions = searchOptions || {}
+            for(var so in searchOptions) {
+                search[so] = searchOptions[so]
             }
         }
 
@@ -136,7 +137,8 @@ window.Betable = function Betable(clientID, search_options) {
                 break
             case Betable.Mode.FullScreen:
             case Betable.Mode.Canvas:
-                //Communicate with the parent
+                params.action = action
+                parent.window.postMessage(JSON.stringify(params), 'http://players.dev.betable.com')
                 break
             default:
                  throw "SDK in unknown mode"
@@ -292,6 +294,16 @@ window.Betable = function Betable(clientID, search_options) {
         }
     }
 
+    this.canIGamble = function Betable_canIGamble(callback, errback) {
+        var self = this
+        this.api('GET', '/can-i-gamble', null, function(data) {
+            if (self.demoMode) {
+                data.can_gamble = true
+            }
+            callback(data)
+        }, errback)
+    }
+
     //Utilities 
 
     this.api = function Betable_api(
@@ -368,7 +380,7 @@ window.Betable = function Betable(clientID, search_options) {
     this.init()    
 }
 Betable.betableURL = 'https://betable.com'
-Betable.betableAPIURL = "https://api.betable.com/1.0"
+Betable.betableAPIURL = 'http://localhost:8020'//"https://api.betable.com/1.0"
 
 Betable.Mode = {
     FullScreen: 'fullscreen'
@@ -403,3 +415,4 @@ Betable.Decimal = (function(){
 })()
 
 })();
+
