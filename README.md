@@ -103,3 +103,48 @@ This call checks the geolocation of the user and responds with whether the user 
 The important bit of this is the can_gamble field. If it is true then they are in a jurisdiction where they can gamble.
 
 #Chrome Calls
+
+`betable.chrome(action, params)`
+
+If you want to make a call to the betable chrome (for depositing, withdrawing, redeeming a promo, etc) you can simply make a call to the betable object called chrome.
+
+##Modes
+
+How different modes work with the chrome:
+
+**Fullscreen and Canvas**
+
+Most of these will be handled by a drop down modal. With exception for support, redeem and promotions, which will redirect away from the game to new pages
+
+**Standalone**
+
+In standalone mode, when a chrome call is made, the app will do a full page redirect to the betable page. **We are currently working to make this more configurable to support popup windows**.
+
+##Actions
+
+It is only required that you implement the `deposit` action and the `wallet` action.
+
+###`deposit`
+
+This will allow the user to deposit more money.
+
+###`wallet`
+
+This will allow users to see their recent transactions, as well as state their current wallet balance.
+
+###`redeem`
+
+This will allow users to redeem a dev-signed promotion. You must pass the promotion in as a parameter
+
+###`withdraw`
+
+This will take the user to the withdraw request page, where they can request to withdraw money from their betable wallet.
+
+###`support`
+
+This will take the user to the FAQ page with a link to contact our customer support.
+
+###`promotions`
+
+This will take the user to the promotion wall so they can see which promotions they are currently eligible for
+
