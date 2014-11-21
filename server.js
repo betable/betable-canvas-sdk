@@ -20,10 +20,18 @@ function getFile(localFolder, runningFolder, filePath,res,page404){
             if(!err){
                 //if there was no error
                 //send the contents with the default 200/ok header
+                var extension = path.extname(filePath) 
+                if (extension == '.js') {
+                    console.log("   [Content-Type] application/javascript")
+                    res.writeHead(200, {'Content-Type': 'application/javascript'})
+                }
+                if (extension == '.css') {
+                    console.log("   [Content-Type] text/css")
+                    res.writeHead(200, {'Content-Type': 'text/css'})
+                }
                 res.end(contents);
             } else {
                 //for our own troubleshooting
-                console.dir(err);
             };
         });
     }
@@ -52,10 +60,11 @@ function getFile(localFolder, runningFolder, filePath,res,page404){
 function requestHandler(req, res) {
     console.log("<-"+req.url)
     var requrl = req.url.split('?')[0]
-      , fileName = path.basename(requrl) || 'index.html'
+      , fileName = requrl.substr(1) || 'index.html'
       , localFolder = __dirname + '/'
       , runningFolder = process.cwd() + '/'
       , page404 = localFolder + '404.html'
+
 
     if (!requrl.search('/api')) {
         var options = {
@@ -110,12 +119,20 @@ function requestHandler(req, res) {
 };
  
 //step 2) create the server
-var options = {
-    key: fs.readFileSync(__dirname + '/dummy.key'),
-    cert: fs.readFileSync(__dirname + '/dummy.crt')
+var server
+  , secureServer = manifest.secure || true
+  , port = manifest.port || '8888'
+if  (manifest.secure) {
+    var options = {
+        key: fs.readFileSync(__dirname + '/dummy.key'),
+        cert: fs.readFileSync(__dirname + '/dummy.crt')
+    }
+    server = https.createServer(options, requestHandler)
+} else {
+    server = http.createServer(requestHandler)
 }
-https.createServer(options, requestHandler)
  
 //step 3) listen for an HTTP request on port 3000
-.listen(8888);
-console.log("Server Started")
+server.listen(port);
+console.log("Server Started...")
+console.log("Listening on port", port)

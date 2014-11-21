@@ -34,6 +34,7 @@ window.Betable = function Betable(clientID, search_options) {
         this.authorized = false;
         this.clientID = clientID
         this.mode = Betable.Mode.StandAlone
+        this.storedInfo = {} 
         this.setupWithLocation(window.location, search_options)
         //Setup porthole
         this.endpoint = Betable.betableAPIURL
@@ -88,6 +89,16 @@ window.Betable = function Betable(clientID, search_options) {
             }
         }
         this.manifest = search.manifest
+        if (search.storedInfo) {
+            console.log("[Store All Info]")
+            console.log('    [this]',this)
+            this.storedInfo = JSON.parse(search.storedInfo)
+            console.log('    [info]', this.storedInfo)
+        }
+    }
+
+    this.accessToken = function () {
+        return _accessToken
     }
 
     this.url = function Betable_url(path, params) {
@@ -138,25 +149,10 @@ window.Betable = function Betable(clientID, search_options) {
             case Betable.Mode.FullScreen:
             case Betable.Mode.Canvas:
                 params.action = action
-                parent.window.postMessage(JSON.stringify(params), 'http://players.dev.betable.com')
+                parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
                 break
             default:
                  throw "SDK in unknown mode"
-        }
-    }
-
-    //Move this into a chrome call
-    this.playForReal = function Betable_playForReal() {
-        switch(this.mode) {
-            case Betable.Mode.StandAlone:
-                throw "Playing for real is not supported in this mode"
-                break
-            case Betable.Mode.FullScreen:
-            case Betable.Mode.Canvas:
-                window.location = fullURL
-                break
-            default:
-                throw "SDK in unknown mode"
         }
     }
 
@@ -205,7 +201,7 @@ window.Betable = function Betable(clientID, search_options) {
                     }
                 }
             }
-            callback(output)
+            callback(outputWallet)
         }, 0)
     }
 
@@ -304,6 +300,34 @@ window.Betable = function Betable(clientID, search_options) {
         }, errback)
     }
 
+    //Cookies
+    
+    this.storeInfo = function Betable_storeInfo(name, value) {
+        console.log("[Store Info]", name, "=", value)
+        this.storedInfo[name] = value
+        var params = {action: 'storeInfo', info: this.storedInfo}
+        parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
+    }
+    this.readInfo = function Betable_readInfo(name) {
+        console.log("[Read Info]")
+        console.log("    [this]", this)
+        console.log("    [Info]", name, "=", this.storedInfo[name])
+        console.log("    [BOOK KEEP]", this.storedInfo)
+        return this.storedInfo[name]
+    }
+    this.deleteInfo = function Betable_deleteInfo(name) {
+        console.log("[Delete Info]", name)
+        delete this.storedInfo[name]
+        var params = {action: 'storeInfo', info: this.storedInfo}
+        parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
+    }
+
+    this.canStoreCookies = function Betable_canStoreCookies() {
+        var is_safari = navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf("Chrome") == -1
+          , is_iframe = top.location != self.location
+        return !is_safari || !is_iframe;
+    }
+
     //Utilities 
 
     this.api = function Betable_api(
@@ -380,7 +404,9 @@ window.Betable = function Betable(clientID, search_options) {
     this.init()    
 }
 Betable.betableURL = 'https://betable.com'
-Betable.betableAPIURL = 'http://localhost:8020'//"https://api.betable.com/1.0"
+//Betable.betableURL = 'http://players.dev.betable.com:8080'
+Betable.betableAPIURL = "https://api.betable.com/1.0"
+//Betable.betableAPIURL = "http://localhost:8020"
 
 Betable.Mode = {
     FullScreen: 'fullscreen'
