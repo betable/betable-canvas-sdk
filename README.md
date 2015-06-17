@@ -60,7 +60,9 @@ Your authorization endpoint will be called one of 2 ways. Either with a `code` o
 ###1. Setup a separate domain to test cookies
 
 Either modifiy or create this file:
+
 Windows: `\WINDOWS\system32\drivers\etc\hosts`
+
 Mac: `/etc/hosts\`
 
 Add this line:
@@ -69,9 +71,7 @@ Add this line:
 127.0.0.1   betablegames.com
 ```
 
-###2. Add the 2 attached files to the web directory of your app
-
-###3. Run the testing server (and potentially installing node if you haven't already)
+###2. Run the testing server (and potentially installing node if you haven't already)
 
 If you don't have node installed, first install node.
 
@@ -81,11 +81,11 @@ Then run this command:
 node server.js
 ```
 
-From the web directory
+From the games root directory
 
-###4. Visit [http://localhost:8080/test](http://localhost:8080/test)
+###3. Visit [http://localhost:8080/test](http://localhost:8080/test)
 
-###5. Test all functionality:
+###4. Test all functionality:
 * all the outside betable chrome calls like deposit and play or real will show up in the console
 * demo mode can be tested by adding ?demoMode=true (like so http://localhost:8080/test?demoMode=true)
 * doesn't work in safari atm, but I'm working on it (gotta save and load the cookies like betable.com does).
