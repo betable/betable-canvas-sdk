@@ -8,6 +8,7 @@ var http = require('http')
   , manifest = require(process.cwd() + '/manifest')
   , client_id = manifest.client_id
   , client_secret = manifest.client_secret
+  , protocol = manifest.secure ? 'https:' : 'http:'
 
 console.log(manifest)
  
@@ -18,7 +19,7 @@ function getFile(localFolder, runningFolder, filePath,res,page404){
         //read the fiule, run the anonymous function
         fs.readFile(folder+filePath,function(err,contents){
             if(!err){
-                //if there was no error
+                
                 //send the contents with the default 200/ok header
                 var extension = path.extname(filePath) 
                 if (extension == '.js') {
@@ -59,18 +60,48 @@ function getFile(localFolder, runningFolder, filePath,res,page404){
 //a helper function to handle HTTP requests
 function requestHandler(req, res) {
     console.log("<-"+req.url)
-    var requrl = req.url.split('?')[0]
-      , fileName = requrl.substr(1) || 'index.html'
+    var urlParts = req.url.split('?')
+      , path = urlParts[0]
+      , search = urlParts[1] ? "&"+urlParts[1] : ""
+      , fileName = path.substr(1) || 'index.html'
       , localFolder = __dirname + '/'
       , runningFolder = process.cwd() + '/'
       , page404 = localFolder + '404.html'
 
 
-    if (!requrl.search('/api')) {
+    if (!path.search('/test')) {
+        var iframeSearch = "?e=1&_parentURL="+encodeURIComponent(protocol+"//localhost:8080")+"&accessToken="+manifest.testToken+"&canvas=true&"+search
+          , body = ""
+            + "<html>\n"
+            + "    <head>\n"
+            + "        <script>\n"
+            + "            \n"
+            + "             //Event listneners for communication with betable-canvas\n"
+            + "             function handleGameMessage(evt) { \n"
+            + "                 var message = JSON.parse(evt.data)\n"
+            + "                 console.log(message)"
+            + "             }\n"
+            + "             \n"
+            + "             if (window.addEventListener){\n"
+            + "                 addEventListener('message', handleGameMessage, false)\n"
+            + "             } else {\n"
+            + "                 attachEvent('onmessage', handleGameMessage)\n"
+            + "             }\n"
+            + "        </script>\n"
+            + "    </head>\n"
+            + "    <body>\n"
+            + "        <iframe style='height:100%;width:100%' src='"+protocol+"//betablegames.com:8080"+iframeSearch+"'></iframe>\n"
+            + "    </body>\n"
+            + "</html>\n"
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(body);
+        return
+    }
+    if (!path.search('/api')) {
         var options = {
             host: 'api.betable.com'
         }
-        if (requrl == '/api/authorize') {
+        if (path == '/api/authorize') {
             options.path = '/1.0/token'      
             options.method = "POST"
             options.headers = {
@@ -85,7 +116,7 @@ function requestHandler(req, res) {
                 write = 'grant_type=authorization_code&redirect_uri='+redirect_uri+'&code='+code
             } else if (query.client_user_id) {
                 write = 'grant_type=client_credentials&redirect_uri='+redirect_uri+'&client_user_id='+query.client_user_id
-                params = '&demoMode=1'
+                params = '&demoMode=true'
             } else {
                 res.writeHead(404, {'Content-Type': 'text/html'});
                 getFile(localFolder, runningFolder, page404, res, null)
@@ -120,7 +151,6 @@ function requestHandler(req, res) {
  
 //step 2) create the server
 var server
-  , secureServer = manifest.secure || true
   , port = manifest.port || '8888'
 if  (manifest.secure) {
     var options = {

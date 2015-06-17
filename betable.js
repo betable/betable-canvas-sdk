@@ -29,15 +29,15 @@
 
 
 window.Betable = function Betable(clientID, search_options) {
-    var _accessToken;
+    var _accessToken
     this.init = function () {
-        this.authorized = false;
+        this.authorized = false
         this.clientID = clientID
         this.mode = Betable.Mode.StandAlone
-        this.storedInfo = {} 
-        this.setupWithLocation(window.location, search_options)
-        //Setup porthole
+        this.storedInfo = {}
         this.endpoint = Betable.betableAPIURL
+		this.parentURL = Betable.betableURL
+		this.setupWithLocation(window.location, search_options)
     }
     this.setupWithLocation = function Betable_setupWithLocation(loc, searchOptions) {
         var parts = loc.search.substr(1).split('&')
@@ -72,23 +72,24 @@ window.Betable = function Betable(clientID, search_options) {
         if (_accessToken || this.mode != Betable.Mode.StandAlone) {
             this.authorized = true
         }
-        if (this.demoMode) {
-            this._demoWallet = {
-                real: {
-                    balance: search.init_balance || '5000.00' 
-                  , currency: 'GBP'
-                  , economy: 'real'
-                  , credits: {}
-                }, 
-                sandbox: {
-                    balance: search.init_balance || '5000.00' 
-                  , currency: 'GBP'
-                  , economy: 'sandbox'
-                  , credits: {}
-                }
+        this._demoWallet = {
+            real: {
+                balance: search.init_balance || '10000.00'
+              , currency: 'GBP'
+              , economy: 'real'
+              , credits: {}
+            },
+            sandbox: {
+                balance: search.init_balance || '10000.00'
+              , currency: 'GBP'
+              , economy: 'sandbox'
+              , credits: {}
             }
         }
         this.manifest = search.manifest
+		if (search._parentURL) {
+			this.parentURL = search._parentURL
+		}
         if (search.storedInfo) {
             console.log("[Store All Info]")
             console.log('    [this]',this)
@@ -116,10 +117,10 @@ window.Betable = function Betable(clientID, search_options) {
           , closeButton = "<div style='position:fixed; width:10px; height:10px; top:5px; right:5px; color:#CB3332' onclick='__betablePopupClose' style = class='betable-close'>×</div>"
           , popup = this.popup =  document.createElement("div")
         popup.innerHTML = iframe + closeButton
-        document.getElementsByTagName('body')[0].appendChild(popup);
+        document.getElementsByTagName('body')[0].appendChild(popup)
         window.__betablePopupClose = function () {
             window.__betablePopupClose = null
-            popup.parentNode.removeChild(popup);
+            popup.parentNode.removeChild(popup)
         }
     }
 
@@ -149,7 +150,7 @@ window.Betable = function Betable(clientID, search_options) {
             case Betable.Mode.FullScreen:
             case Betable.Mode.Canvas:
                 params.action = action
-                parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
+                parent.window.postMessage(JSON.stringify(params), this.parentURL)
                 break
             default:
                  throw "SDK in unknown mode"
@@ -211,10 +212,19 @@ window.Betable = function Betable(clientID, search_options) {
     }
 
     this.bet = function Betable_bet(gameID, data, callback, errback) {
+        this.heartbeat()
         if (this.demoMode) {
-            var economy = data.economy
-              , wager = data.wager
+            var wager = data.wager
+              , economy = data.economy              
               , balance = this._demoWallet[economy].balance
+
+            if (wager === undefined && data.wagers) {
+                wager = 0
+                for (var i=0,l=data.wagers.length; i<l; i++) {
+                    wager += parseFloat(data.wagers[i].wager)
+                }
+                wager = wager.toFixed(2)
+            }
             if (parseFloat(wager) > parseFloat(balance)) {
                 setTimeout(function () {
                     errback({error: "insufficient_funds"})
@@ -226,7 +236,7 @@ window.Betable = function Betable(clientID, search_options) {
             this.unbackedBet(gameID, data, function(betData) {
                 _settleDemoWallet.call(self, wager, betData, economy)
                 callback(betData)
-            }, errback);
+            }, errback)
         } else {
             this.api(
                 'POST'
@@ -240,6 +250,7 @@ window.Betable = function Betable(clientID, search_options) {
     }
 
     this.betCredits = function Betable_betCredits(gameID, creditGameID, data, callback, errback) {
+        this.heartbeat()
         if (this.demoMode) {
             var economy = data.economy
               , wager = data.wager
@@ -256,13 +267,14 @@ window.Betable = function Betable(clientID, search_options) {
             this.unbackedCreditBet(gameID, creditGameID, data, function(betData) {
                 _settleDemoWallet.call(self, wager, betData, economy, creditGameID)
                 callback(betData)
-            }, errback);
+            }, errback)
         } else {
             this.bet(gameID +'/'+ creditGameID, data, callback, errback)
         }
     }
 
     this.unbackedBet = function Betable_unbackedBet(gameID, data, callback, errback) {
+        this.heartbeat()
         this.api(
             'POST'
           , '/games/' + gameID + '/unbacked-bet'
@@ -273,7 +285,14 @@ window.Betable = function Betable(clientID, search_options) {
     }
 
     this.unbackedBetCredits = function Betable_unbackedBetCredits(gameID, creditGameID, options, callback, errback) {
+        this.heartbeat()
         this.unbackedBet(gameID +'/'+ creditGameID, data, callback, errback)
+    }
+
+    this.heartbeat = function Betable_heartbeat() {
+        if (this.mode == Betable.Mode.Canvas) {
+            parent.window.postMessage(JSON.stringify({action: 'heartbeat'}), this.parentURL)
+        }
     }
 
     this.wallet = function Betable_wallet(games, callback, errback) {
@@ -301,34 +320,30 @@ window.Betable = function Betable(clientID, search_options) {
     }
 
     //Cookies
-    
+
     this.storeInfo = function Betable_storeInfo(name, value) {
-        console.log("[Store Info]", name, "=", value)
         this.storedInfo[name] = value
         var params = {action: 'storeInfo', info: this.storedInfo}
-        parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
+        parent.window.postMessage(JSON.stringify(params), this.parentURL)
     }
     this.readInfo = function Betable_readInfo(name) {
-        console.log("[Read Info]")
-        console.log("    [this]", this)
-        console.log("    [Info]", name, "=", this.storedInfo[name])
-        console.log("    [BOOK KEEP]", this.storedInfo)
         return this.storedInfo[name]
     }
     this.deleteInfo = function Betable_deleteInfo(name) {
-        console.log("[Delete Info]", name)
         delete this.storedInfo[name]
         var params = {action: 'storeInfo', info: this.storedInfo}
-        parent.window.postMessage(JSON.stringify(params), Betable.betableURL)
+        parent.window.postMessage(JSON.stringify(params), this.parentURL)
     }
 
     this.canStoreCookies = function Betable_canStoreCookies() {
         var is_safari = navigator.userAgent.indexOf("Safari") > -1 && navigator.userAgent.indexOf("Chrome") == -1
+          , is_ios = /iphone|ipod|ipad/.test(navigator.userAgent.toLowerCase())
           , is_iframe = top.location != self.location
-        return !is_safari || !is_iframe;
+          , is_cookie_limited = (is_safari || is_ios) && is_iframe
+        return !is_cookie_limited
     }
 
-    //Utilities 
+    //Utilities
 
     this.api = function Betable_api(
         method
@@ -401,8 +416,9 @@ window.Betable = function Betable(clientID, search_options) {
             xhr.send()
         }
     }
-    this.init()    
+    this.init()
 }
+
 Betable.betableURL = 'https://betable.com'
 //Betable.betableURL = 'http://players.dev.betable.com:8080'
 Betable.betableAPIURL = "https://api.betable.com/1.0"
