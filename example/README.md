@@ -17,7 +17,7 @@ touch game/manifest.js
 
 ```
 
-##Step 2. Download the SDK [:inbox_tray:](https://github.com/betable/betable-canvas-sdk/releases/download/0.1.0/release.zip)
+##Step 2. Download the SDK [:inbox_tray:](https://github.com/betable/betable-canvas-sdk/releases/download/0.2.0/release.zip)
 
 Then unzip its contents to betable-canvas-sdk inside of the DiceGame folder
 
