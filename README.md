@@ -8,7 +8,7 @@ If you are new to all of this the best place to start is [here](example/)
 
 #Starting from scratch
 
-* Download the SDK [:inbox_tray:](https://github.com/betable/betable-canvas-sdk/releases/download/0.1.0/release.zip)
+* Download the SDK [:inbox_tray:](https://github.com/betable/betable-canvas-sdk/releases/download/0.2.0/release.zip)
 * Create a folder to house your game
 * Create an index.html file in your game folder
 * Make sure to set your redirect URI to "https://localhost:8888/authorize"
