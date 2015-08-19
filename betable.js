@@ -249,7 +249,7 @@ window.Betable = function Betable(clientID, search_options) {
         }
     }
 
-    this.betCredits = function Betable_betCredits(gameID, creditGameID, data, callback, errback) {
+    this.creditBet = function Betable_creditBet(gameID, creditGameID, data, callback, errback) {
         this.heartbeat()
         if (this.demoMode) {
             var economy = data.economy
@@ -284,7 +284,7 @@ window.Betable = function Betable(clientID, search_options) {
         )
     }
 
-    this.unbackedBetCredits = function Betable_unbackedBetCredits(gameID, creditGameID, options, callback, errback) {
+    this.unbackedCreditBet = function Betable_unbackedCreditBet(gameID, creditGameID, options, callback, errback) {
         this.heartbeat()
         this.unbackedBet(gameID +'/'+ creditGameID, data, callback, errback)
     }
